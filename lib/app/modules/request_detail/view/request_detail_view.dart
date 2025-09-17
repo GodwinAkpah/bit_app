@@ -10,19 +10,22 @@ class RequestDetailView extends GetView<RequestDetailController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blood Requests'),
+        title: const Text('Blood Requests' , style: TextStyle(color: Colors.white),),
         backgroundColor: AppColors.primaryRed,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildRequesterCard(),
-            const SizedBox(height: 20),
-            _buildReasonCard(),
-            const SizedBox(height: 20),
-            _buildLocationCard(),
-          ],
+      body: Container(
+        color: Colors.grey[200], // <-- Set background color to grey
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _buildRequesterCard(),
+              const SizedBox(height: 20),
+              _buildReasonCard(),
+              const SizedBox(height: 20),
+              _buildLocationCard(),
+            ],
+          ),
         ),
       ),
     );
@@ -36,7 +39,7 @@ class RequestDetailView extends GetView<RequestDetailController> {
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundImage: AssetImage('assets/images/user_placeholder.png'), // Add a placeholder
+            backgroundImage: AssetImage('assets/imgs/por.png'), // Add a placeholder
           ),
           const SizedBox(height: 12),
           Text(controller.request.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -48,9 +51,9 @@ class RequestDetailView extends GetView<RequestDetailController> {
           const Divider(height: 30),
           Row(
             children: [
-              Expanded(child: _actionButton(text: 'Call Now', icon: Icons.call, color: AppColors.primaryTeal, onTap: controller.callNow)),
+              Expanded(child: _actionButton(text: 'Call Now', icon: Icons.call, color: AppColors.primaryTeal, onTap: controller.callNow, borderRadius: 30, )),
               const SizedBox(width: 16),
-              Expanded(child: _actionButton(text: 'Accept', icon: Icons.check_circle, color: AppColors.primaryRed, onTap: controller.acceptRequest)),
+              Expanded(child: _actionButton(text: 'Accept', icon: Icons.check_circle, color: AppColors.primaryRed, onTap: controller.acceptRequest,borderRadius: 30, )),
             ],
           ),
         ],
@@ -92,7 +95,7 @@ class RequestDetailView extends GetView<RequestDetailController> {
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Image.asset(
-              'assets/images/map_placeholder.png',
+              'assets/imgs/map.png',
               height: 180,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -112,7 +115,7 @@ class RequestDetailView extends GetView<RequestDetailController> {
     );
   }
 
-  Widget _actionButton({required String text, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _actionButton({required String text, required IconData icon, required Color color, required VoidCallback onTap, double borderRadius = 30, }) {
     return ElevatedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, color: Colors.white, size: 20),

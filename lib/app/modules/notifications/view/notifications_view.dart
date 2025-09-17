@@ -10,18 +10,23 @@ class NotificationsView extends GetView<NotificationsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notification'),
+    appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white), // <-- Change icons to white
+        title: const Text('Notification', style: TextStyle(color: Colors.white, fontSize: 16)),
         backgroundColor: AppColors.primaryRed,
+        elevation: 0,
       ),
-      body: Obx(() => ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: controller.notifications.length,
-        itemBuilder: (context, index) {
-          final notification = controller.notifications[index];
-          return _buildNotificationItem(notification);
-        },
-      )),
+      body: Container(
+        color: Colors.white, // <-- Changed background color to white
+        child: Obx(() => ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: controller.notifications.length,
+          itemBuilder: (context, index) {
+            final notification = controller.notifications[index];
+            return _buildNotificationItem(notification);
+          },
+        )),
+      ),
     );
   }
 

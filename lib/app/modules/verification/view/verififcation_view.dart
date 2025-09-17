@@ -22,7 +22,7 @@ class VerificationView extends GetView<VerificationController> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.lightGray,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -37,7 +37,7 @@ class VerificationView extends GetView<VerificationController> {
             const SizedBox(height: 40),
             const Text(
               'OTP Verification',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24,     fontWeight: FontWeight.w600,),
             ),
             const SizedBox(height: 16),
             Obx(() => controller.isOtpSent.value
@@ -63,15 +63,15 @@ class VerificationView extends GetView<VerificationController> {
   Widget _buildHeaderIcon() {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.primaryRed.withOpacity(0.1),
-      ),
+      // decoration: BoxDecoration(
+      //   shape: BoxShape.circle,
+      //   color: AppColors.primaryRed.withOpacity(0.1),
+      // ),
       child: Image.asset(
         'assets/imgs/port.png', // Update the path as needed
-        width: 50,
-        height: 50,
-        color: AppColors.primaryRed, // Optional: tint the image
+        width: 180,
+        height: 180,
+        // color: AppColors.primaryRed, // Optional: tint the image
       ),
     );
   }
@@ -80,7 +80,7 @@ class VerificationView extends GetView<VerificationController> {
     return const Text(
       'We will send you a one-time password\nto this mobile number',
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey),
+      style: TextStyle(fontSize: 14, color: Colors.grey),
     );
   }
 
@@ -105,12 +105,12 @@ class VerificationView extends GetView<VerificationController> {
       children: [
         const Text(
           'Confirm mobile number',
-          style: TextStyle(fontSize: 16, color: AppColors.primaryTeal),
+          style: TextStyle(fontSize: 1, color: AppColors.primaryTeal),
         ),
         const SizedBox(height: 8),
         Text(
           controller.maskedPhoneNumber,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
       ],
     );
@@ -139,7 +139,7 @@ class VerificationView extends GetView<VerificationController> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
-        child: const Text('Send OTP', style: TextStyle(fontSize: 18, color: Colors.white)),
+        child: const Text('Send OTP', style: TextStyle(fontSize: 16, color: Colors.white)),
       ),
     );
   }
@@ -155,7 +155,7 @@ class VerificationView extends GetView<VerificationController> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
-        child: const Text('Verify & Proceed', style: TextStyle(fontSize: 18, color: Colors.white)),
+        child: const Text('Verify & Proceed', style: TextStyle(fontSize: 16, color: Colors.white)),
       ),
     );
   }

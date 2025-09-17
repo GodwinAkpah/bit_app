@@ -12,29 +12,34 @@ class FindDonorView extends GetView<FindDonorController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Find Donor'),
+        iconTheme: const IconThemeData(color: Colors.white), // <-- Change icons to white
+        title: const Text('Find Donor', style: TextStyle(color: Colors.white, fontSize: 16)),
         backgroundColor: AppColors.primaryRed,
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Available donors', style: TextStyle(color: Colors.grey)),
+      body: Container(
+        color: Colors.grey[200], // <-- Set background color to grey
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text('Available donors', style: TextStyle(color: Colors.grey)),
+              ),
             ),
-          ),
-          Expanded(
-            child: Obx(() => ListView.builder(
-              itemCount: controller.filteredDonors.length,
-              itemBuilder: (context, index) {
-                final donor = controller.filteredDonors[index];
-                return _donorListItem(donor);
-              },
-            )),
-          ),
-        ],
+            Expanded(
+              child: Obx(() => ListView.builder(
+                itemCount: controller.filteredDonors.length,
+                itemBuilder: (context, index) {
+                  final donor = controller.filteredDonors[index];
+                  return _donorListItem(donor);
+                },
+              )),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -89,9 +94,9 @@ class FindDonorView extends GetView<FindDonorController> {
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.location_on, color: AppColors.primaryRed, size: 14),
+                const Icon(Icons.location_on, color: AppColors.primaryRed, size: 1),
                 const SizedBox(width: 4),
-                Text(donor.location, style: const TextStyle(color: Colors.grey)),
+                Text(donor.location, style: const TextStyle(color: Colors.grey, fontSize: 14)),
               ],
             ),
           ],

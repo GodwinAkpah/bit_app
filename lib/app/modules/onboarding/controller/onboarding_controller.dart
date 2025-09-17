@@ -53,7 +53,7 @@ class OnBoardingController extends GetxController {
   void navigateToHome() {
     // offAllNamed clears all previous routes, so the user can't go back
     // to onboarding or login/signup from the home screen.
-    Get.offAllNamed(AppRoutes.DASHBOARD);
+    Get.offAllNamed(AppRoutes.LOGIN);
   }
 
   @override

@@ -11,18 +11,21 @@ class RequestsListView extends GetView<RequestsListController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blood Requests'),
+        title: const Text('Blood Requests' , style: TextStyle(color: Colors.white),),
         backgroundColor: AppColors.primaryRed,
         automaticallyImplyLeading: false, // Remove back button from tab view
       ),
-      body: Obx(() => ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: controller.requests.length,
-        itemBuilder: (context, index) {
-          final request = controller.requests[index];
-          return _buildRequestItem(request);
-        },
-      )),
+      body: Container(
+        color: Colors.grey[200], // <-- Set background color to grey
+        child: Obx(() => ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: controller.requests.length,
+          itemBuilder: (context, index) {
+            final request = controller.requests[index];
+            return _buildRequestItem(request);
+          },
+        )),
+      ),
     );
   }
 

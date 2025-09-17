@@ -29,7 +29,7 @@ class SplashController extends GetxController {
     // After 4.5 seconds, navigate to the main onboarding screen
     Timer(const Duration(milliseconds: 4500), () {
       // Use offAllNamed to prevent the user from going back to the splash
-      Get.offAllNamed(AppRoutes.ON_BOARDING);
+      Get.offAllNamed(AppRoutes.LOGIN);
     });
   }
 }

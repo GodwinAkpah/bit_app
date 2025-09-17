@@ -34,7 +34,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.ON_BOARDING,
-      page: () => const OnBoardingView(), // Assuming you will create this next
+      page: () => const OnBoardingView(), 
       binding: OnBoardingBinding(),
     ),
     GetPage(

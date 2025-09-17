@@ -52,16 +52,21 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: controller.loginUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryRed,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
+              Center(
+                child: SizedBox(
+                  width: 200, // <-- Set desired width here
+                  child: ElevatedButton(
+                    onPressed: controller.loginUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryRed,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                    child: const Text('Login',
+                        style: TextStyle(fontSize: 18, color: Colors.white)),
+                  ),
                 ),
-                child: const Text('Login',
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
               const SizedBox(height: 24),
               _buildBiometricLogins(), // Correctly placed biometric widget
@@ -113,7 +118,7 @@ class LoginView extends GetView<LoginController> {
         Expanded(
           child: _socialButton(
             text: 'Google',
-            imagePath: 'assets/images/Original.png', // Add this to assets/images
+            imagePath: 'assets/imgs/Original.png', // Add this to assets/images
             onTap: () => controller.onSocialLoginTap('Google'),
           ),
         ),

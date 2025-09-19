@@ -84,18 +84,27 @@ class BloodRequestView extends GetView<BloodRequestController> {
                 
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: controller.submitRequest,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryRed,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(fontSize: 18, color: Colors.white), // <-- Set text color to white
-                    ),
-                  ),
+                  child: Obx(() => SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: controller.isLoading.value ? null : controller.submitRequest,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.primaryRed,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+    ),
+    child: controller.isLoading.value
+        ? const SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+          )
+        : const Text(
+            'Submit',
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+  ),
+)),
                 ),
               ],
             )),

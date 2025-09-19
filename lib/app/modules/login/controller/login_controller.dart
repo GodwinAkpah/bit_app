@@ -1,51 +1,195 @@
+
+
+// import 'package:bit_app/app/routes/app_routes.dart';
+// import 'package:bit_app/services/auth/auth_service.dart';
+// import 'package:bit_app/services/service_manifest.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:get_storage/get_storage.dart';
+
+// class LoginController extends GetxController {
+//   // --- DEPENDENCIES ---
+//   final AuthService _authService = serviceLocator<AuthService>();
+//   final _storage = GetStorage();
+
+//   // --- FORM CONTROLLERS ---
+//   final emailController = TextEditingController();
+//   final passwordController = TextEditingController();
+
+//   // --- UI STATE ---
+//   final RxBool isPasswordVisible = false.obs;
+//   final RxBool isLoading = false.obs;
+
+//   // --- UI LOGIC ---
+//   void togglePasswordVisibility() => isPasswordVisible.toggle();
+
+//   /// Main function to validate and log in the user.
+//   void loginUser() async {
+//     if (!_validateForm()) return;
+
+//     isLoading.value = true;
+
+//     try {
+//       final Map<String, dynamic> loginData = {
+//         "email": emailController.text.trim(),
+//         "password": passwordController.text,
+//       };
+
+//       final response = await _authService.login(loginData);
+
+//       if (response.status == 'success') {
+//         // --- THE FIX IS HERE ---
+//         // We are now looking for the correct key: 'access_token'
+//         final token = response.data?['access_token'];
+
+//         if (token != null && token is String) {
+//           // Save the correct token
+//           await _storage.write('auth_token', token);
+//           print("Login successful. Token saved: $token");
+          
+//           _showSnackbar('Success', 'Login successful!', isError: false);
+//           Get.offAllNamed(AppRoutes.DASHBOARD);
+//         } else {
+//           // This error will now only happen if the server truly doesn't send the token
+//           _showSnackbar('Login Error', 'Authentication failed: Token not found in response.', isError: true);
+//         }
+//       } else {
+//         _showSnackbar('Login Failed', response.message, isError: true);
+//       }
+//     } catch (e) {
+//       print("Login Error: $e");
+//       _showSnackbar('Error', 'An unexpected error occurred. Please try again.', isError: true);
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+
+//   // --- HELPER & PLACEHOLDER METHODS ---
+//   bool _validateForm() {
+//     if (!GetUtils.isEmail(emailController.text.trim())) {
+//       _showSnackbar('Login Error', 'Please enter a valid email.', isError: true);
+//       return false;
+//     }
+//     if (passwordController.text.isEmpty) {
+//       _showSnackbar('Login Error', 'Please enter your password.', isError:true);
+//       return false;
+//     }
+//     return true;
+//   }
+
+//   void _showSnackbar(String title, String message, {required bool isError}) {
+//     Get.snackbar(
+//       title, message,
+//       snackPosition: SnackPosition.BOTTOM,
+//       backgroundColor: isError ? Colors.redAccent : Colors.green,
+//       colorText: Colors.white,
+//       margin: const EdgeInsets.all(10),
+//     );
+//   }
+
+//   void onBiometricLoginTap() => _showSnackbar('Info', 'Biometric login is not yet implemented.', isError: false);
+//   void onSocialLoginTap(String provider) => _showSnackbar('Info', '$provider login is not yet implemented.', isError: false);
+
+//   @override
+//   void onClose() {
+//     emailController.dispose();
+//     passwordController.dispose();
+//     super.onClose();
+//   }
+// }
+
+
+// --- END OF CORRECTIONS ---
+import 'package:bit_app/app/routes/app_routes.dart';
+import 'package:bit_app/services/auth/auth_service.dart';
+import 'package:bit_app/services/models/user_model.dart';
+import 'package:bit_app/services/service_manifest.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../routes/app_routes.dart';
+import 'package:get_storage/get_storage.dart';
 
 class LoginController extends GetxController {
-  // Controllers for the text fields
+  // --- DEPENDENCIES ---
+  final AuthService _authService = serviceLocator<AuthService>();
+  final _storage = GetStorage();
+
+  // --- FORM CONTROLLERS ---
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // Reactive variable to toggle password visibility
+  // --- UI STATE ---
   final RxBool isPasswordVisible = false.obs;
+  final RxBool isLoading = false.obs;
 
-  /// Toggles the visibility of the password text.
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
+  // --- UI LOGIC ---
+  void togglePasswordVisibility() => isPasswordVisible.toggle();
+
+  /// Main function to validate, log in, and save user session.
+  void loginUser() async {
+    if (!_validateForm()) return;
+
+    isLoading.value = true;
+
+    try {
+      final Map<String, dynamic> loginData = {
+        "email": emailController.text.trim(),
+        "password": passwordController.text,
+      };
+
+      final response = await _authService.login(loginData);
+
+      if (response.status == 'success') {
+        final token = response.data?['access_token'];
+        final userDataMap = response.data?['user'];
+
+        if (token != null && token is String && userDataMap != null && userDataMap is Map<String, dynamic>) {
+          await _storage.write('auth_token', token);
+
+          final user = UserModel(
+            uid: userDataMap['id'].toString(),
+            username: userDataMap['name'] ?? 'N/A',
+            email: userDataMap['email'] ?? 'N/A',
+            phone: userDataMap['phone'] ?? "08012345678",
+            location: userDataMap['location'] ?? 'N/A',
+            gender: userDataMap['gender'] ?? 'N/A',
+            bloodType: userDataMap['blood_type'] ?? 'N/A',
+            donated: userDataMap['donations'] ?? 0,
+            requested: userDataMap['requests'] ?? 0,
+            dateOfBirth: userDataMap['date_of_birth'] ?? '',
+          );
+
+          await _storage.write('user_data', user.toJson());
+          
+          _showSnackbar('Success', 'Login successful!', isError: false);
+          Get.offAllNamed(AppRoutes.DASHBOARD);
+        } else {
+          _showSnackbar('Login Error', 'Authentication failed: Invalid response from server.', isError: true);
+        }
+      } else {
+        _showSnackbar('Login Failed', response.message, isError: true);
+      }
+    } catch (e) {
+      print("Login Controller Error: $e");
+      _showSnackbar('Error', 'An unexpected error occurred. Please try again.', isError: true);
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  /// Handles the main login button press.
-  void loginUser() {
-    // TODO: Add form validation and real authentication logic here.
-    print('Attempting to log in with Email: ${emailController.text}');
-    
-    // On success, navigate to the Home screen
-    Get.offAllNamed(AppRoutes.DASHBOARD);
+  // --- HELPER & PLACEHOLDER METHODS ---
+  bool _validateForm() {
+    if (!GetUtils.isEmail(emailController.text.trim())) { _showSnackbar('Login Error', 'Please enter a valid email.', isError: true); return false; }
+    if (passwordController.text.isEmpty) { _showSnackbar('Login Error', 'Please enter your password.', isError:true); return false; }
+    return true;
   }
 
-  /// Placeholder function for biometric login taps. Does nothing.
-  void onBiometricLoginTap() {
-    print("Biometric login tapped, but not implemented.");
-    // In a real app, this would trigger the local_auth flow.
-    Get.snackbar(
-      'Feature Not Implemented', 
-      'Biometric login is for UI demonstration only.',
-      snackPosition: SnackPosition.BOTTOM
-    );
+  void _showSnackbar(String title, String message, {required bool isError}) {
+    Get.snackbar( title, message, snackPosition: SnackPosition.BOTTOM, backgroundColor: isError ? Colors.redAccent : Colors.green, colorText: Colors.white, margin: const EdgeInsets.all(10));
   }
 
-  /// Placeholder function for social login taps. Does nothing.
-  void onSocialLoginTap(String provider) {
-    print("$provider login tapped, but not implemented.");
-     Get.snackbar(
-      'Feature Not Implemented', 
-      '$provider login is for UI demonstration only.',
-      snackPosition: SnackPosition.BOTTOM
-    );
-  }
+  void onBiometricLoginTap() => _showSnackbar('Info', 'Biometric login is not yet implemented.', isError: false);
+  void onSocialLoginTap(String provider) => _showSnackbar('Info', '$provider login is not yet implemented.', isError: false);
 
-  /// Cleans up controllers to prevent memory leaks.
   @override
   void onClose() {
     emailController.dispose();

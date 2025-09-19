@@ -158,18 +158,25 @@ class CoreService {
     try {
       final res = await _dio.get(url, queryParameters: params);
 
-      // THE FIX: Check if the response data is a List.
-      if (res.data is List) {
-        // If it's a list, manually create a successful APIResponse.
-        // We wrap the list inside the 'data' field of our standard response.
+      // THE FIX: Check for ANY successful status code (200-299 range).
+      if (res.statusCode != null && res.statusCode! >= 200 && res.statusCode! < 300) {
+        // If the server's response body is already in our standard format, parse it.
+        // This is good for future-proofing.
+        if (res.data is Map<String, dynamic> && (res.data.containsKey('status') || res.data.containsKey('success'))) {
+          return APIResponse.fromMap(res.data);
+        }
+        
+        // OTHERWISE, manually create a successful APIResponse.
+        // This will now correctly handle BOTH the List from /blood-requests/
+        // AND the Map from /blood-requests/{id}.
         return APIResponse(
           status: 'success',
           message: 'Data fetched successfully.',
-          data: res.data, // The data property will now hold the List
+          data: res.data,
         );
       }
       
-      // If the response is a Map (a normal JSON object), parse it as before.
+      // For any other case, parse it as a potential error.
       return APIResponse.fromMap(res.data);
     } on dio_pack.DioException catch (e) {
       return _handleDioError(e);

@@ -83,7 +83,7 @@ class AppPages {
 
       GetPage(
       name: AppRoutes.REQUEST_DETAIL,
-      page: () => const RequestsListView(),
+      page: () => const  RequestDetailView(),
       binding: RequestDetailBinding(),
     ),
     GetPage(

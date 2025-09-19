@@ -17,4 +17,15 @@ class RequestService extends CoreService {
   Future<APIResponse> getBloodRequests({Map<String, dynamic>? filters}) async {
     return await get(url: "/blood-requests/", params: filters);
   }
+
+   Future<APIResponse> getBloodRequestById(int id) async {
+    return await get(url: "/blood-requests/$id");
+  }
+    /// Updates a blood request, typically to accept it (PUT).
+  Future<APIResponse> acceptBloodRequest({
+    required int requestId,
+    required Map<String, dynamic> data,
+  }) async {
+    return await put(url: "/blood-requests/$requestId", payload: data);
+  }
 }

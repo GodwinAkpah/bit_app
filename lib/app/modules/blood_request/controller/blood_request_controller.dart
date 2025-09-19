@@ -1,23 +1,23 @@
 
 
-// --- END OF CORRECTIONS ---
-// import 'package:bit_app/app/data/models/user_model.dart';
 // import 'package:bit_app/app/modules/blood_request/view/blood_request_view.dart';
 // import 'package:bit_app/services/models/user_model.dart';
 // import 'package:bit_app/services/request_service.dart';
 // import 'package:bit_app/services/service_manifest.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
+// import 'package:get/get_core/src/get_main.dart';
+// import 'package:get/get_rx/src/rx_types/rx_types.dart';
+// import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 // import 'package:get_storage/get_storage.dart';
+
 
 // enum RequestType { self, others }
 
 // class BloodRequestController extends GetxController {
-//   // --- DEPENDENCIES ---
 //   final RequestService _requestService = serviceLocator<RequestService>();
 //   final _storage = GetStorage();
 
-//   // --- FORM STATE ---
 //   final nameController = TextEditingController();
 //   final mobileController = TextEditingController();
 //   final locationController = TextEditingController();
@@ -27,11 +27,9 @@
 //   final RxInt selectedPints = 0.obs;
 //   final RxBool isLoading = false.obs;
 
-//   // --- STATIC DATA ---
 //   final List<String> bloodGroups = const ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 //   final List<int> pintUnits = const [1, 2, 3, 4, 5, 6];
   
-//   // --- USER DATA ---
 //   late UserModel _currentUser;
 
 //   @override
@@ -86,7 +84,9 @@
 //         "phone": mobileController.text.trim(),
 //         if (reasonController.text.trim().isNotEmpty) "reason": reasonController.text.trim(),
 //       };
+      
 //       final response = await _requestService.createBloodRequest(requestData);
+
 //       if (response.status == 'success') {
 //         Get.dialog(const RequestSuccessDialog(), barrierDismissible: false);
 //         Future.delayed(const Duration(seconds: 3), () {
@@ -94,7 +94,7 @@
 //           Get.back(); // Go back from form screen
 //         });
 //       } else {
-//         Get.snackbar('Request Failed', response.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
+//         Get.snackbar('Request success', response.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
 //       }
 //     } catch (e) {
 //       Get.snackbar('Error', 'An unexpected error occurred. Please try again.', backgroundColor: Colors.redAccent, colorText: Colors.white);
@@ -121,24 +121,25 @@
 //   }
 // }
 
+// --- CORRECTED IMPORTS ---
+
 import 'package:bit_app/app/modules/blood_request/view/blood_request_view.dart';
+import 'package:bit_app/app/modules/requests_list/controller/requests_list_controller.dart';
 import 'package:bit_app/services/models/user_model.dart';
 import 'package:bit_app/services/request_service.dart';
 import 'package:bit_app/services/service_manifest.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
-
 
 enum RequestType { self, others }
 
 class BloodRequestController extends GetxController {
+  // --- DEPENDENCIES (Now pointing to the correct services) ---
   final RequestService _requestService = serviceLocator<RequestService>();
   final _storage = GetStorage();
 
+  // --- FORM STATE ---
   final nameController = TextEditingController();
   final mobileController = TextEditingController();
   final locationController = TextEditingController();
@@ -148,9 +149,11 @@ class BloodRequestController extends GetxController {
   final RxInt selectedPints = 0.obs;
   final RxBool isLoading = false.obs;
 
+  // --- STATIC DATA ---
   final List<String> bloodGroups = const ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
   final List<int> pintUnits = const [1, 2, 3, 4, 5, 6];
   
+  // --- USER DATA (Using the correct UserModel) ---
   late UserModel _currentUser;
 
   @override
@@ -209,13 +212,22 @@ class BloodRequestController extends GetxController {
       final response = await _requestService.createBloodRequest(requestData);
 
       if (response.status == 'success') {
+        // --- THE FIX TO REFRESH THE LIST ---
+        // 2. Check if the controller exists in memory and then call its refresh method.
+        if (Get.isRegistered<RequestsListController>()) {
+          final requestsListController = Get.find<RequestsListController>();
+          requestsListController.fetchRequests();
+          print("Successfully triggered list refresh.");
+        }
+        // --- END OF FIX ---
+        
         Get.dialog(const RequestSuccessDialog(), barrierDismissible: false);
         Future.delayed(const Duration(seconds: 3), () {
           Get.back(); // Close dialog
           Get.back(); // Go back from form screen
         });
       } else {
-        Get.snackbar('Request success', response.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
+        Get.snackbar('Request Failed', response.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred. Please try again.', backgroundColor: Colors.redAccent, colorText: Colors.white);

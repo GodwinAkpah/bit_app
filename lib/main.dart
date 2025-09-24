@@ -1,30 +1,3 @@
-// import 'package:bit_app/app/routes/app_routes.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'app/routes/app_pages.dart';
-// import 'app/theme/app_theme.dart';
-
-// void main() {
-//   runApp(MyApp( navigatorKey: Get.key));
-// }
-
-// class MyApp extends StatelessWidget {
-//    final GlobalKey<NavigatorState> navigatorKey;
-//   const MyApp({super.key, required this.navigatorKey});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GetMaterialApp(
-//       title: 'BloodBit',
-//       theme: AppTheme.lightTheme,
-//       // Change this to start at the splash screen
-//       initialRoute: AppRoutes.SPLASH,
-//       getPages: AppPages.routes,
-//       debugShowCheckedModeBanner: false,
-//     );
-//   }
-// }
-
 import 'package:bit_app/app/routes/app_pages.dart';
 import 'package:bit_app/app/routes/app_routes.dart';
 import 'package:bit_app/app/theme/app_theme.dart';
@@ -34,23 +7,41 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 void main() async {
-  // --- ADD THESE TWO LINES ---
-  await GetStorage.init();
-  setupServiceLocator();
-  // --- END OF ADDITIONS ---
+  // Ensure that Flutter bindings are initialized.
+  WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  // Initialize storage.
+  await GetStorage.init();
+
+  // Set up the service locators.
+  await setupServiceLocator();
+
+  // --- ADDED LOGIC FOR PERSISTENT LOGIN ---
+  // Check if the auth token exists.
+  final box = GetStorage();
+  final token = box.read('auth_token');
+
+  // Determine the initial route based on the token.
+  final String initialRoute = (token != null && token.isNotEmpty) ? AppRoutes.HOME : AppRoutes.LOGIN;
+  // --- END ADDED LOGIC ---
+
+  // Pass the initial route to the app.
+  runApp(MyApp(initialRoute: initialRoute));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  // --- MODIFIED TO ACCEPT INITIAL ROUTE ---
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
+  // --- END MODIFICATION ---
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'BloodBit',
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.SPLASH,
+      // Use the passed-in initial route.
+      initialRoute: initialRoute,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
     );

@@ -18,13 +18,10 @@ class RequestsListView extends GetView<RequestsListController> {
       ),
       body: Container(
         color: Colors.grey[100],
-        // Use Obx to rebuild the body based on the controller's state
         child: Obx(() {
           if (controller.isLoading.value) {
-            // --- LOADING STATE ---
             return const Center(child: CircularProgressIndicator(color: AppColors.primaryRed));
           } else if (controller.errorMessage.value.isNotEmpty) {
-            // --- ERROR STATE ---
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -36,7 +33,6 @@ class RequestsListView extends GetView<RequestsListController> {
               ),
             );
           } else if (controller.requests.isEmpty) {
-            // --- EMPTY STATE ---
             return const Center(
               child: Text(
                 'No blood requests found.',
@@ -44,9 +40,8 @@ class RequestsListView extends GetView<RequestsListController> {
               ),
             );
           } else {
-            // --- SUCCESS STATE (LIST) ---
             return RefreshIndicator(
-              onRefresh: controller.fetchRequests, // Allows pull-to-refresh
+              onRefresh: controller.fetchRequests,
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: controller.requests.length,
@@ -95,7 +90,7 @@ class RequestsListView extends GetView<RequestsListController> {
           children: [
             const SizedBox(height: 4),
             Text(
-              request.unitsNeeded, // Use the getter from the model
+              '${request.quantity} pints',
               style: const TextStyle(color: AppColors.primaryTeal, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
@@ -107,6 +102,45 @@ class RequestsListView extends GetView<RequestsListController> {
               ],
             ),
           ],
+        ),
+        // --- ADDED STATUS CHIP ---
+        trailing: _buildStatusChip(request.status),
+      ),
+    );
+  }
+
+  // --- NEW WIDGET TO DISPLAY THE STATUS ---
+  Widget _buildStatusChip(String? status) {
+    // Default to 'pending' if status is null or empty
+    final effectiveStatus = (status == null || status.isEmpty) ? 'pending' : status.toLowerCase();
+
+    Color chipColor;
+    String statusText;
+
+    switch (effectiveStatus) {
+      case 'accepted':
+        chipColor = AppColors.primaryTeal;
+        statusText = 'Accepted';
+        break;
+      case 'pending':
+      default: // Catches 'pending' and any other unexpected status
+        chipColor = Colors.orange;
+        statusText = 'Pending';
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: chipColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        statusText,
+        style: TextStyle(
+          color: chipColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
         ),
       ),
     );

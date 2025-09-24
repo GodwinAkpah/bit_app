@@ -14,4 +14,5 @@ class AppRoutes {
   
   static const REQUEST_DETAIL = '/request-detail';
   static const NOTIFICATIONS = '/notifications';// The new main entry point
+  static const PROFILE = '/profile';
 }

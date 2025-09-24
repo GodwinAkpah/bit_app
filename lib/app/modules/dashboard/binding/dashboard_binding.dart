@@ -13,7 +13,10 @@ class DashboardBinding extends Bindings {
     
     // Controllers for each tab
     Get.lazyPut<HomeController>(() => HomeController());
-    Get.lazyPut<ProfileController>(() => ProfileController());
+
+    // Correctly provide the UserService to the ProfileController.
+    Get.lazyPut<ProfileController>(() => ProfileController(Get.find()));
+
     // Get.lazyPut<RequestController>(() => RequestController()); // For the middle tab
     Get.lazyPut<RequestsListController>(() => RequestsListController());
   }

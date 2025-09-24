@@ -1,45 +1,93 @@
-import 'package:bit_app/app/modules/donor_profile/models/donor_model.dart';
-import 'package:bit_app/app/routes/app_routes.dart';
+
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-
+import 'package:bit_app/services/models/user_model.dart';
+import 'package:bit_app/services/user_service.dart';
 
 class FindDonorController extends GetxController {
-  // A hardcoded list for demonstration. In a real app, this comes from an API.
-  final List<Donor> _allDonors = [
-    Donor(id: '1', name: 'Vanessa Franklin', phone: '09069987764', location: 'LAMINGO, PLATEAU STATE', bloodType: 'A+', imageUrl: 'assets/images/donor1.png', donated: 8, requested: 3),
-    Donor(id: '2', name: 'Ephraim Brony', phone: '09069987764', location: 'LAMINGO, PLATEAU STATE', bloodType: 'B+', imageUrl: 'assets/images/donor2.png', donated: 5),
-    Donor(id: '3', name: 'Jon Franklin', phone: '09069987764', location: 'RAYFIELD, PLATEAU STATE', bloodType: 'AB+', imageUrl: 'assets/images/donor3.png', donated: 12, requested: 1),
-    Donor(id: '4', name: 'Rose Park', phone: '09069987764', location: 'TUDUN WADA, PLATEAU STATE', bloodType: 'O+', imageUrl: 'assets/images/donor4.png', requested: 5),
-  ];
+  final UserService _userService;
+  FindDonorController(this._userService);
 
-  // A reactive list that the UI will listen to for changes.
-  final RxList<Donor> filteredDonors = <Donor>[].obs;
+  // --- State Management ---
+  final RxList<UserModel> allDonors = <UserModel>[].obs;       // Holds all donors fetched from the API
+  final RxList<UserModel> filteredDonors = <UserModel>[].obs; // The list displayed on the screen
+  final RxBool isLoading = true.obs;
+  final RxString errorMessage = ''.obs;
+
+  // --- Search and Filter ---
+  final TextEditingController searchController = TextEditingController();
+
+  // A clear and user-friendly list for the blood group filter UI
+  final List<String> bloodGroups = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  final RxString selectedBloodGroup = 'All'.obs; // Default to show all blood groups
 
   @override
   void onInit() {
     super.onInit();
-    // Initialize the list with all donors when the screen loads.
-    filteredDonors.assignAll(_allDonors);
+    fetchAllDonors();
+
+    // Add listeners to automatically trigger the filter when the user types or selects a new group
+    searchController.addListener(_filterDonors);
+    selectedBloodGroup.listen((_) => _filterDonors());
   }
 
-  /// Filters the donor list based on a search query.
-  void search(String query) {
-    if (query.isEmpty) {
-      filteredDonors.assignAll(_allDonors);
-    } else {
-      // Filter by name or blood type, case-insensitively.
-      final lowerCaseQuery = query.toLowerCase();
-      filteredDonors.value = _allDonors
-          .where((donor) =>
-              donor.name.toLowerCase().contains(lowerCaseQuery) ||
-              donor.bloodType.toLowerCase().contains(lowerCaseQuery))
-          .toList();
+  @override
+  void onClose() {
+    searchController.removeListener(_filterDonors);
+    searchController.dispose();
+    super.onClose();
+  }
+
+  /// Fetches the initial list of all available donors from the UserService.
+  Future<void> fetchAllDonors() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      
+      // Using the correct service we built earlier.
+      final response = await _userService.findDonors();
+
+      if (response.status == 'success' && response.data != null) {
+        final List<dynamic> donorData = response.data as List<dynamic>;
+        // Parsing the raw JSON data into our standard UserModel.
+        final donors = donorData.map((data) => UserModel.fromJson(data)).toList();
+        
+        allDonors.assignAll(donors);
+        filteredDonors.assignAll(donors); // Initially, the filtered list is the full list
+      } else {
+        errorMessage.value = response.message;
+      }
+    } catch (e) {
+      print("Fetch Donors Error: $e");
+      errorMessage.value = 'An unexpected error occurred while fetching donors.';
+    } finally {
+      isLoading.value = false;
     }
   }
-  
-  /// Navigates to the profile screen, passing the selected donor object.
-  void navigateToDonorProfile(Donor donor) {
-    Get.toNamed(AppRoutes.DONOR_PROFILE, arguments: donor);
+
+  /// Filters the list of donors based on the search query and selected blood group.
+  void _filterDonors() {
+    final nameQuery = searchController.text.toLowerCase();
+    final bloodGroupQuery = selectedBloodGroup.value;
+
+    List<UserModel> tempFilteredList = allDonors.where((donor) {
+      // Using the properties from our UserModel.
+      final donorName = donor.username.toLowerCase();
+      final donorBloodType = donor.bloodType;
+
+      final nameMatches = nameQuery.isEmpty || donorName.contains(nameQuery);
+      final bloodGroupMatches = bloodGroupQuery == 'All' || donorBloodType == bloodGroupQuery;
+
+      return nameMatches && bloodGroupMatches;
+    }).toList();
+
+    filteredDonors.assignAll(tempFilteredList);
+  }
+
+  /// Navigates to a specific donor's profile. (Assumes a route is set up)
+  void navigateToDonorProfile(UserModel donor) {
+    // We can pass the whole user model to the next screen
+    // Get.toNamed(AppRoutes.DONOR_PROFILE, arguments: donor);
+    Get.snackbar('Navigate', 'Tapped on ${donor.username}'); // Placeholder action
   }
 }

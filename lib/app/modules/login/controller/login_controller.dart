@@ -1,116 +1,13 @@
-
-
-// import 'package:bit_app/app/routes/app_routes.dart';
-// import 'package:bit_app/services/auth/auth_service.dart';
-// import 'package:bit_app/services/service_manifest.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:get_storage/get_storage.dart';
-
-// class LoginController extends GetxController {
-//   // --- DEPENDENCIES ---
-//   final AuthService _authService = serviceLocator<AuthService>();
-//   final _storage = GetStorage();
-
-//   // --- FORM CONTROLLERS ---
-//   final emailController = TextEditingController();
-//   final passwordController = TextEditingController();
-
-//   // --- UI STATE ---
-//   final RxBool isPasswordVisible = false.obs;
-//   final RxBool isLoading = false.obs;
-
-//   // --- UI LOGIC ---
-//   void togglePasswordVisibility() => isPasswordVisible.toggle();
-
-//   /// Main function to validate and log in the user.
-//   void loginUser() async {
-//     if (!_validateForm()) return;
-
-//     isLoading.value = true;
-
-//     try {
-//       final Map<String, dynamic> loginData = {
-//         "email": emailController.text.trim(),
-//         "password": passwordController.text,
-//       };
-
-//       final response = await _authService.login(loginData);
-
-//       if (response.status == 'success') {
-//         // --- THE FIX IS HERE ---
-//         // We are now looking for the correct key: 'access_token'
-//         final token = response.data?['access_token'];
-
-//         if (token != null && token is String) {
-//           // Save the correct token
-//           await _storage.write('auth_token', token);
-//           print("Login successful. Token saved: $token");
-          
-//           _showSnackbar('Success', 'Login successful!', isError: false);
-//           Get.offAllNamed(AppRoutes.DASHBOARD);
-//         } else {
-//           // This error will now only happen if the server truly doesn't send the token
-//           _showSnackbar('Login Error', 'Authentication failed: Token not found in response.', isError: true);
-//         }
-//       } else {
-//         _showSnackbar('Login Failed', response.message, isError: true);
-//       }
-//     } catch (e) {
-//       print("Login Error: $e");
-//       _showSnackbar('Error', 'An unexpected error occurred. Please try again.', isError: true);
-//     } finally {
-//       isLoading.value = false;
-//     }
-//   }
-
-//   // --- HELPER & PLACEHOLDER METHODS ---
-//   bool _validateForm() {
-//     if (!GetUtils.isEmail(emailController.text.trim())) {
-//       _showSnackbar('Login Error', 'Please enter a valid email.', isError: true);
-//       return false;
-//     }
-//     if (passwordController.text.isEmpty) {
-//       _showSnackbar('Login Error', 'Please enter your password.', isError:true);
-//       return false;
-//     }
-//     return true;
-//   }
-
-//   void _showSnackbar(String title, String message, {required bool isError}) {
-//     Get.snackbar(
-//       title, message,
-//       snackPosition: SnackPosition.BOTTOM,
-//       backgroundColor: isError ? Colors.redAccent : Colors.green,
-//       colorText: Colors.white,
-//       margin: const EdgeInsets.all(10),
-//     );
-//   }
-
-//   void onBiometricLoginTap() => _showSnackbar('Info', 'Biometric login is not yet implemented.', isError: false);
-//   void onSocialLoginTap(String provider) => _showSnackbar('Info', '$provider login is not yet implemented.', isError: false);
-
-//   @override
-//   void onClose() {
-//     emailController.dispose();
-//     passwordController.dispose();
-//     super.onClose();
-//   }
-// }
-
-
-// --- END OF CORRECTIONS ---
 import 'package:bit_app/app/routes/app_routes.dart';
 import 'package:bit_app/services/auth/auth_service.dart';
 import 'package:bit_app/services/models/user_model.dart';
-import 'package:bit_app/services/service_manifest.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class LoginController extends GetxController {
   // --- DEPENDENCIES ---
-  final AuthService _authService = serviceLocator<AuthService>();
+  final AuthService _authService = Get.find<AuthService>();
   final _storage = GetStorage();
 
   // --- FORM CONTROLLERS ---

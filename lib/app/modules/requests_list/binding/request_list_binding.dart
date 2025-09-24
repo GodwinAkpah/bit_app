@@ -1,9 +1,13 @@
 import 'package:get/get.dart';
 import '../controller/requests_list_controller.dart';
 
-class RequestsListBinding extends Bindings {
+class RequestListBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<RequestsListController>(() => RequestsListController());
+    // The RequestsListController will automatically find the globally registered
+    // RequestService, so we only need to register the controller itself.
+    Get.lazyPut<RequestsListController>(
+      () => RequestsListController(),
+    );
   }
 }

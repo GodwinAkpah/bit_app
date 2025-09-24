@@ -1,10 +1,8 @@
-
-
 import 'package:bit_app/app/modules/blood_request/view/blood_request_view.dart';
+import 'package:bit_app/app/modules/dashboard/controller/dashboard_controller.dart';
 import 'package:bit_app/app/modules/requests_list/controller/requests_list_controller.dart';
 import 'package:bit_app/services/models/user_model.dart';
 import 'package:bit_app/services/request_service.dart';
-import 'package:bit_app/services/service_manifest.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,8 +10,8 @@ import 'package:get_storage/get_storage.dart';
 enum RequestType { self, others }
 
 class BloodRequestController extends GetxController {
-  // --- DEPENDENCIES (Now pointing to the correct services) ---
-  final RequestService _requestService = serviceLocator<RequestService>();
+  // --- DEPENDENCIES ---
+  final RequestService _requestService = Get.find<RequestService>();
   final _storage = GetStorage();
 
   // --- FORM STATE ---
@@ -29,8 +27,8 @@ class BloodRequestController extends GetxController {
   // --- STATIC DATA ---
   final List<String> bloodGroups = const ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
   final List<int> pintUnits = const [1, 2, 3, 4, 5, 6];
-  
-  // --- USER DATA (Using the correct UserModel) ---
+
+  // --- USER DATA ---
   late UserModel _currentUser;
 
   @override
@@ -44,6 +42,7 @@ class BloodRequestController extends GetxController {
     if (userDataMap != null) {
       _currentUser = UserModel.fromJson(userDataMap);
     } else {
+      // Create a default user if none is stored
       _currentUser = UserModel(
         uid: 'mock_user_123',
         username: "Mock User",
@@ -80,29 +79,32 @@ class BloodRequestController extends GetxController {
         "blood_type": selectedBloodGroup.value,
         "quantity": selectedPints.value,
         "location": locationController.text.trim(),
-        "donor_id": _currentUser.uid,
+        "requester_id": _currentUser.uid,
         "name": nameController.text.trim(),
         "phone": mobileController.text.trim(),
         if (reasonController.text.trim().isNotEmpty) "reason": reasonController.text.trim(),
       };
-      
+
       final response = await _requestService.createBloodRequest(requestData);
 
       if (response.status == 'success') {
-        // --- THE FIX TO REFRESH THE LIST ---
-        // 2. Check if the controller exists in memory and then call its refresh method.
         if (Get.isRegistered<RequestsListController>()) {
-          final requestsListController = Get.find<RequestsListController>();
-          requestsListController.fetchRequests();
-          print("Successfully triggered list refresh.");
+          Get.find<RequestsListController>().fetchRequests();
         }
-        // --- END OF FIX ---
-        
-        Get.dialog(const RequestSuccessDialog(), barrierDismissible: false);
-        Future.delayed(const Duration(seconds: 3), () {
-          Get.back(); // Close dialog
-          Get.back(); // Go back from form screen
-        });
+
+        if (Get.isRegistered<DashboardController>()) {
+          Get.find<DashboardController>().changeTabIndex(1);
+        }
+
+        Get.back();
+        Get.snackbar(
+          'Success',
+          'Your blood request has been submitted successfully.',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
       } else {
         Get.snackbar('Request Failed', response.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
       }

@@ -12,6 +12,8 @@ import 'package:bit_app/app/modules/notifications/binding/notifications_binding.
 import 'package:bit_app/app/modules/notifications/view/notifications_view.dart';
 import 'package:bit_app/app/modules/onboarding/bindings/onboarding_binding.dart';
 import 'package:bit_app/app/modules/onboarding/view/onboarding_view.dart';
+import 'package:bit_app/app/modules/profile/binding/profile_binding.dart';
+import 'package:bit_app/app/modules/profile/view/profile_view.dart';
 import 'package:bit_app/app/modules/request_detail/binding/request_detail_binding.dart';
 import 'package:bit_app/app/modules/request_detail/view/request_detail_view.dart';
 import 'package:bit_app/app/modules/sign_up/bindings/signup_binding.dart';
@@ -90,6 +92,12 @@ class AppPages {
       name: AppRoutes.NOTIFICATIONS,
       page: () => const NotificationsView(),
       binding: NotificationsBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.PROFILE,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
+      transition: Transition.rightToLeft,
     ),
   ];
 }

@@ -60,16 +60,13 @@ class CoreService {
           print("Data: ${options.data}");
           return handler.next(options);
         },
-        // --- THIS IS THE KEY DEBUGGING STEP ---
         onResponse: (response, handler) {
-          // Log the raw response data as a string
           print("<-- ${response.statusCode} ${response.requestOptions.path}");
           print("Raw Response Data: ${response.data.toString()}");
           print("<-- END HTTP");
           return handler.next(response);
         },
         onError: (dio_pack.DioException error, handler) {
-          // Also log the raw error response
           print("<!- ERROR ${error.response?.statusCode} ${error.requestOptions.path}");
           print("Error Response Data: ${error.response?.data.toString()}");
           print("<!- END ERROR");
@@ -91,52 +88,22 @@ class CoreService {
 
   // --- REUSABLE HTTP METHODS ---
 
-  /// For POST requests (creating data).
-  /// 
-  /// 
-  // Future<APIResponse> post({required String url, dynamic payload}) async {
-  //   try {
-  //     final res = await _dio.post(url, data: payload);
-
-  //     // THE FIX: Check for specific success status codes like 201 (Created).
-  //     if (res.statusCode == 201 || res.statusCode == 200) {
-  //       // If the status code is a success, but the body might not have a 'status' key,
-  //       // we MANUALLY create a successful APIResponse.
-  //       return APIResponse(
-  //         status: 'success',
-  //         message: 'Operation successful', // A generic success message
-  //         data: res.data, // Treat the entire response body as the data
-  //       );
-  //     }
-      
-  //     // If the status code is something else, parse it normally.
-  //     return APIResponse.fromMap(res.data);
-  //   } on dio_pack.DioException catch (e) {
-  //     return _handleDioError(e);
-  //   }
-  // }
  Future<APIResponse> post({required String url, dynamic payload}) async {
     try {
       final res = await _dio.post(url, data: payload);
 
-      // THE FIX: Check for ANY successful status code (200-299 range).
-      // This now correctly handles both Login (200) and Register (201).
       if (res.statusCode != null && res.statusCode! >= 200 && res.statusCode! < 300) {
-        // If the server's response body is already in our standard format, parse it.
         if (res.data is Map<String, dynamic> && (res.data.containsKey('status') || res.data.containsKey('success'))) {
           return APIResponse.fromMap(res.data);
         }
         
-        // OTHERWISE, manually create a successful APIResponse.
-        // This is what will happen for your Login response.
         return APIResponse(
           status: 'success',
-          message: 'Operation completed successfully.', // A generic success message
-          data: res.data, // Treat the entire response body as the data
+          message: 'Operation completed successfully.',
+          data: res.data,
         );
       }
       
-      // For any other case, parse it as a potential error.
       return APIResponse.fromMap(res.data);
     } on dio_pack.DioException catch (e) {
       return _handleDioError(e);
@@ -154,21 +121,15 @@ class CoreService {
   }
 
   /// For GET requests (fetching data).
-  Future<APIResponse> get({required String url, Map<String, dynamic>? params}) async {
+  Future<APIResponse> get({required String url, Map<String, dynamic>? queryParams}) async {
     try {
-      final res = await _dio.get(url, queryParameters: params);
+      final res = await _dio.get(url, queryParameters: queryParams);
 
-      // THE FIX: Check for ANY successful status code (200-299 range).
       if (res.statusCode != null && res.statusCode! >= 200 && res.statusCode! < 300) {
-        // If the server's response body is already in our standard format, parse it.
-        // This is good for future-proofing.
         if (res.data is Map<String, dynamic> && (res.data.containsKey('status') || res.data.containsKey('success'))) {
           return APIResponse.fromMap(res.data);
         }
         
-        // OTHERWISE, manually create a successful APIResponse.
-        // This will now correctly handle BOTH the List from /blood-requests/
-        // AND the Map from /blood-requests/{id}.
         return APIResponse(
           status: 'success',
           message: 'Data fetched successfully.',
@@ -176,7 +137,6 @@ class CoreService {
         );
       }
       
-      // For any other case, parse it as a potential error.
       return APIResponse.fromMap(res.data);
     } on dio_pack.DioException catch (e) {
       return _handleDioError(e);

@@ -1,8 +1,7 @@
-import 'package:bit_app/app/modules/donor_profile/models/donor_model.dart';
-import 'package:bit_app/app/utils/app_colors.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:bit_app/app/utils/app_colors.dart';
 import '../controller/find_donor_controller.dart';
 
 class FindDonorView extends GetView<FindDonorController> {
@@ -12,31 +11,68 @@ class FindDonorView extends GetView<FindDonorController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white), // <-- Change icons to white
-        title: const Text('Find Donor', style: TextStyle(color: Colors.white, fontSize: 16)),
+        title: const Text('Find a Donor', style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primaryRed,
-        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        color: Colors.grey[200], // <-- Set background color to grey
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildSearchBar(),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text('Available donors', style: TextStyle(color: Colors.grey)),
-              ),
-            ),
+            _buildSearchAndFilterControls(),
+            const SizedBox(height: 16),
+            // The list of donors will reactively update based on search/filter
             Expanded(
-              child: Obx(() => ListView.builder(
-                itemCount: controller.filteredDonors.length,
-                itemBuilder: (context, index) {
-                  final donor = controller.filteredDonors[index];
-                  return _donorListItem(donor);
-                },
-              )),
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator(color: AppColors.primaryRed));
+                }
+
+                if (controller.errorMessage.value.isNotEmpty) {
+                  return Center(
+                    child: Text(
+                      controller.errorMessage.value,
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+
+                if (controller.filteredDonors.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No donors found matching your criteria.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  );
+                }
+
+                // Display the list of donors
+                return ListView.builder(
+                  itemCount: controller.filteredDonors.length,
+                  itemBuilder: (context, index) {
+                    final donor = controller.filteredDonors[index];
+                    return Card(
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(12),
+                        leading: CircleAvatar(
+                          backgroundColor: AppColors.primaryRed,
+                          child: Text(
+                            donor.bloodType,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        title: Text(donor.username, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(donor.location, style: const TextStyle(color: Colors.grey)),
+                        onTap: () => controller.navigateToDonorProfile(donor),
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),
@@ -44,64 +80,48 @@ class FindDonorView extends GetView<FindDonorController> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        onChanged: controller.search,
-        decoration: InputDecoration(
-          hintText: 'Select a blood group or name',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: Container(
-            margin: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: AppColors.primaryRed, borderRadius: BorderRadius.circular(8)),
-            child: const Icon(Icons.tune, color: Colors.white),
+  /// Builds the search bar and blood group dropdown.
+  Widget _buildSearchAndFilterControls() {
+    return Column(
+      children: [
+        // --- Search Bar ---
+        TextField(
+          controller: controller.searchController,
+          decoration: InputDecoration(
+            hintText: 'Search by name...',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            filled: true,
+            fillColor: Colors.grey[100],
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-          filled: true,
-          fillColor: Colors.grey[200],
         ),
-      ),
-    );
-  }
-
-  Widget _donorListItem(Donor donor) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 2,
-      shadowColor: Colors.grey.withOpacity(0.2),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        onTap: () => controller.navigateToDonorProfile(donor),
-        leading: Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            CircleAvatar(radius: 25, backgroundImage: AssetImage(donor.imageUrl)),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(color: AppColors.primaryRed, shape: BoxShape.circle),
-              child: Text(donor.bloodType, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-            ),
-          ],
+        const SizedBox(height: 12),
+        // --- Blood Group Filter ---
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[300]!)
+          ),
+          child: Obx(() => DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: controller.selectedBloodGroup.value,
+                  isExpanded: true,
+                  icon: const Icon(Icons.bloodtype, color: AppColors.primaryRed),
+                  items: controller.bloodGroups.map((String bloodGroup) {
+                    return DropdownMenuItem<String>(
+                      value: bloodGroup,
+                      child: Text(bloodGroup == 'All' ? 'All Blood Types' : bloodGroup),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    // The controller handles the filtering logic
+                    controller.selectedBloodGroup.value = newValue!;
+                  },
+                ),
+              )),
         ),
-        title: Text(donor.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(donor.phone),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.location_on, color: AppColors.primaryRed, size: 1),
-                const SizedBox(width: 4),
-                Text(donor.location, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-              ],
-            ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 }

@@ -32,7 +32,7 @@ dependencies:
   dotted_border: ^2.1.0 
   image_picker: ^1.0.7 
   fl_chart: ^0.66.2
-
+  fvm: ^3.2.1
   cupertino_icons: ^1.0.6
   smooth_page_indicator: ^1.1.0
   cached_network_image: ^3.4.0

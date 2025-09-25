@@ -3,6 +3,7 @@ import 'package:bit_app/app/modules/dashboard/controller/dashboard_controller.da
 import 'package:bit_app/app/modules/requests_list/controller/requests_list_controller.dart';
 import 'package:bit_app/services/models/user_model.dart';
 import 'package:bit_app/services/request_service.dart';
+import 'package:bit_app/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,6 +13,7 @@ enum RequestType { self, others }
 class BloodRequestController extends GetxController {
   // --- DEPENDENCIES ---
   final RequestService _requestService = Get.find<RequestService>();
+  final UserService _userService = Get.find<UserService>();
   final _storage = GetStorage();
 
   // --- FORM STATE ---
@@ -88,6 +90,12 @@ class BloodRequestController extends GetxController {
       final response = await _requestService.createBloodRequest(requestData);
 
       if (response.status == 'success') {
+        // Refetch user data to update the request count
+        final userResponse = await _userService.getProfile();
+        if (userResponse.status == 'success') {
+          _storage.write('user_data', userResponse.data);
+        }
+
         if (Get.isRegistered<RequestsListController>()) {
           Get.find<RequestsListController>().fetchRequests();
         }
@@ -109,6 +117,7 @@ class BloodRequestController extends GetxController {
         Get.snackbar('Request Failed', response.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
       }
     } catch (e) {
+      print(e.toString());
       Get.snackbar('Error', 'An unexpected error occurred. Please try again.', backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {
       isLoading.value = false;

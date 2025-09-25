@@ -1,7 +1,7 @@
 class BloodRequestModel {
   final String id;
   final String bloodType;
-  final int quantity;
+  final double quantity;
   final String location;
   final String requesterId;
   final String name;
@@ -27,7 +27,7 @@ class BloodRequestModel {
     return BloodRequestModel(
       id: json['id'].toString(),
       bloodType: json['blood_type'] as String,
-      quantity: json['quantity'] as int,
+      quantity: (json['quantity'] as num).toDouble(),
       location: json['location'] as String,
       requesterId: json['requester_id'].toString(),
       name: json['name'] as String,

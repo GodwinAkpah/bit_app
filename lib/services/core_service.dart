@@ -93,10 +93,6 @@ class CoreService {
       final res = await _dio.post(url, data: payload);
 
       if (res.statusCode != null && res.statusCode! >= 200 && res.statusCode! < 300) {
-        if (res.data is Map<String, dynamic> && (res.data.containsKey('status') || res.data.containsKey('success'))) {
-          return APIResponse.fromMap(res.data);
-        }
-        
         return APIResponse(
           status: 'success',
           message: 'Operation completed successfully.',
@@ -126,10 +122,6 @@ class CoreService {
       final res = await _dio.get(url, queryParameters: queryParams);
 
       if (res.statusCode != null && res.statusCode! >= 200 && res.statusCode! < 300) {
-        if (res.data is Map<String, dynamic> && (res.data.containsKey('status') || res.data.containsKey('success'))) {
-          return APIResponse.fromMap(res.data);
-        }
-        
         return APIResponse(
           status: 'success',
           message: 'Data fetched successfully.',

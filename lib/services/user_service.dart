@@ -5,6 +5,26 @@ class UserService {
   final CoreService _coreService;
   UserService(this._coreService);
 
+  /// Fetches the user's profile data from the server.
+  Future<APIResponse> getProfile() async {
+    final userData = _coreService.getStorage.read('user_data');
+
+    if (userData is! Map<String, dynamic> || userData['id'] == null) {
+      return APIResponse(status: 'error', message: 'User not found. Cannot fetch profile.');
+    }
+    final userId = userData['id'];
+
+    final url = '/users/$userId';
+
+    final response = await _coreService.get(url: url);
+
+    if (response.status == 'success' && response.data != null) {
+      _coreService.getStorage.write('user_data', response.data);
+    }
+
+    return response;
+  }
+
   /// Updates the user's profile data on the server and locally.
   Future<APIResponse> updateProfile(Map<String, dynamic> data) async {
     final userData = _coreService.getStorage.read('user_data');

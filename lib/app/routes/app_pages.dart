@@ -31,17 +31,17 @@ class AppPages {
   static final routes = [
     GetPage(
       name: AppRoutes.SPLASH,
-      page: () => const SplashView(),
+      page: () => SplashView(),
       binding: SplashBinding(),
     ),
     GetPage(
       name: AppRoutes.ON_BOARDING,
-      page: () => const OnBoardingView(), 
+      page: () => OnBoardingView(), 
       binding: OnBoardingBinding(),
     ),
     GetPage(
       name: AppRoutes.LOGIN,
-      page: () => const LoginView(),
+      page: () => LoginView(),
       binding: LoginBinding(),
     ),
     GetPage(
@@ -59,43 +59,43 @@ class AppPages {
       // Add the new DASHBOARD route
     GetPage(
       name: AppRoutes.DASHBOARD,
-      page: () => const DashboardView(),
+      page: () => DashboardView(),
       binding: DashboardBinding(),
     ),
 
       GetPage(
       name: AppRoutes.BLOOD_REQUEST,
-      page: () => const BloodRequestView(),
+      page: () => BloodRequestView(),
       binding: BloodRequestBinding(),
       transition: Transition.rightToLeft, // Optional nice transition
     ),
 
       GetPage(
       name: AppRoutes.FIND_DONOR,
-      page: () => const FindDonorView(),
+      page: () => FindDonorView(),
       binding: FindDonorBinding(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.DONOR_PROFILE,
-      page: () => const DonorProfileView(),
+      page: () => DonorProfileView(),
       binding: DonorProfileBinding(),
       transition: Transition.rightToLeft,
     ),
 
       GetPage(
       name: AppRoutes.REQUEST_DETAIL,
-      page: () => const  RequestDetailView(),
+      page: () =>  RequestDetailView(),
       binding: RequestDetailBinding(),
     ),
     GetPage(
       name: AppRoutes.NOTIFICATIONS,
-      page: () => const NotificationsView(),
+      page: () => NotificationsView(),
       binding: NotificationsBinding(),
     ),
     GetPage(
       name: AppRoutes.PROFILE,
-      page: () => const ProfileView(),
+      page: () => ProfileView(),
       binding: ProfileBinding(),
       transition: Transition.rightToLeft,
     ),

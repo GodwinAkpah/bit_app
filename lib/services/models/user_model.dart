@@ -40,6 +40,7 @@ class UserModel {
       donated: json['donations'] ?? 0,
       requested: json['requests'] ?? 0,
       dateOfBirth: json['date_of_birth'] ?? '',
+      isAvailable: json['isAvailable'] ?? true,
     );
   }
 
@@ -56,6 +57,7 @@ class UserModel {
       'blood_type': bloodType,
       'donations': donated,
       'requests': requested,
+      'isAvailable': isAvailable,
     };
   }
 }

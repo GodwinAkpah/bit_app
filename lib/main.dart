@@ -22,7 +22,7 @@ void main() async {
   final token = box.read('auth_token');
 
   // Determine the initial route based on the token.
-  final String initialRoute = (token != null && token.isNotEmpty) ? AppRoutes.HOME : AppRoutes.LOGIN;
+  final String initialRoute = (token != null && token.isNotEmpty) ? AppRoutes.DASHBOARD : AppRoutes.SPLASH;
   // --- END ADDED LOGIC ---
 
   // Pass the initial route to the app.

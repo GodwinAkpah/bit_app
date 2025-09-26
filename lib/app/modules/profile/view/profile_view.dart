@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:bit_app/app/utils/app_colors.dart'; // Make sure path is correct
+import 'package:bit_app/app/utils/app_colors.dart';
 import '../controller/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -20,7 +20,7 @@ class ProfileView extends GetView<ProfileController> {
               )
             : IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Get.back(),
+                onPressed: controller.goBack,
               ),
         title: Text(
           'Profile',
@@ -45,59 +45,62 @@ class ProfileView extends GetView<ProfileController> {
 
   Widget _buildProfileDisplay() {
     final user = controller.user.value!;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 10),
-          const CircleAvatar(
-            radius: 45,
-            backgroundImage: AssetImage('assets/imgs/por.png'),
-          ),
-          const SizedBox(height: 16),
-          Text(user.username, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.location_on, size: 16, color: AppColors.primaryRed),
-              const SizedBox(width: 4),
-              Text(user.location, style: const TextStyle(color: Colors.grey, fontSize: 16)),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _statItem(user.bloodType, 'Blood Type'),
-              _statItem(user.donated.toString(), 'Donated'),
-              _statItem(user.requested.toString(), 'Requested'),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(child: _actionButton(text: 'Donate', imagePath: 'assets/imgs/donate.png', color: AppColors.primaryRed, onTap: controller.becomeDonor)),
-              const SizedBox(width: 16),
-              Expanded(child: _actionButton(text: 'Request', imagePath: 'assets/imgs/help.png', color: AppColors.primaryRed, onTap: () {})),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildAvailabilityToggle(),
-          const SizedBox(height: 16),
-          _actionButton(text: 'Support', imagePath: 'assets/imgs/sup.png', color: const Color(0xFF8A98E5), onTap: () {}),
-          const SizedBox(height: 16),
-          _buildSignOutButton(),
-          const SizedBox(height: 20),
-        ],
+    return RefreshIndicator(
+      onRefresh: controller.refreshProfile,
+      color: AppColors.primaryRed,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 10),
+            const CircleAvatar(
+              radius: 45,
+              backgroundImage: AssetImage('assets/imgs/por.png'),
+            ),
+            const SizedBox(height: 16),
+            Text(user.username, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.location_on, size: 16, color: AppColors.primaryRed),
+                const SizedBox(width: 4),
+                Text(user.location, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _statItem(user.bloodType, 'Blood Type'),
+                _statItem(user.donated.toString(), 'Donated'),
+                _statItem(user.requested.toString(), 'Requested'),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: _actionButton(text: 'Donate', imagePath: 'assets/imgs/donate.png', color: AppColors.primaryRed, onTap: controller.becomeDonor)),
+                const SizedBox(width: 16),
+                Expanded(child: _actionButton(text: 'Request', imagePath: 'assets/imgs/help.png', color: AppColors.primaryRed, onTap: () {})),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildAvailabilityToggle(),
+            const SizedBox(height: 16),
+            _actionButton(text: 'Support', imagePath: 'assets/imgs/sup.png', color: const Color(0xFF8A98E5), onTap: () {}),
+            const SizedBox(height: 16),
+            _buildSignOutButton(),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
 
-  // --- CORRECTED METHOD ---
   Widget _buildEditProfileForm() {
-    // Define the user variable locally within this method's scope.
     final user = controller.user.value!;
 
     return SingleChildScrollView(
@@ -110,7 +113,6 @@ class ProfileView extends GetView<ProfileController> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
           ),
           const SizedBox(height: 30),
-          // Now these calls are valid.
           _buildProfileField(label: 'Username', controller: controller.usernameController, hint: user.username),
           _buildProfileField(label: 'Email', controller: controller.emailController, hint: user.email),
           _buildProfileField(label: 'Phone', controller: controller.phoneController, hint: user.phone),
@@ -137,7 +139,7 @@ class ProfileView extends GetView<ProfileController> {
 
   Widget _statItem(String value, String label) {
     return Container(
-      width: (Get.width - 48 - 32) / 3, // Responsive width
+      width: (Get.width - 48 - 32) / 3,
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,

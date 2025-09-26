@@ -1,21 +1,20 @@
+import 'package:bit_app/app/modules/home/controller/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bit_app/app/utils/app_colors.dart';
 import 'package:bit_app/app/routes/app_routes.dart';
 
 class AppDrawer extends StatelessWidget {
-  // THE FIX: Removed 'const' from the constructor.
   AppDrawer({super.key});
 
-  // A reactive variable to track the currently selected item.
-  // We'll use this to show the red "hover" effect.
+  final HomeController homeController = Get.find<HomeController>();
   final RxString selectedItem = RxString('Profile');
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: Colors.white,
-      elevation: 0, // A clean, flat look
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: ListView(
@@ -24,23 +23,18 @@ class AppDrawer extends StatelessWidget {
             SizedBox(height: kToolbarHeight + 20),
             _buildDrawerHeader(),
             const SizedBox(height: 30),
-
             _buildDrawerItem(imagePath: 'assets/imgs/user.png', text: 'Profile', route: AppRoutes.PROFILE),
             _buildDrawerItem(imagePath: 'assets/imgs/inbox.png', text: 'Inbox', badge: '+10'),
             _buildDrawerItem(imagePath: 'assets/imgs/blood_bag.png', text: 'Request History'),
             _buildDrawerItem(imagePath: 'assets/imgs/donate.png', text: 'Donate History'),
             _buildDrawerItem(imagePath: 'assets/imgs/notifications-outline.png', text: 'Notifications', hasDot: true, route: AppRoutes.NOTIFICATIONS),
             _buildDrawerItem(imagePath: 'assets/imgs/icon.png', text: 'Settings'),
-            
             const SizedBox(height: 30),
-            const Divider(), // A subtle divider
+            const Divider(),
             const SizedBox(height: 30),
-
-            // Help and Sign Out buttons with custom design
             _buildOutlinedButton(imagePath: 'assets/imgs/icon.png', text: 'Help'),
             const SizedBox(height: 12),
             _buildOutlinedButton(imagePath: 'assets/imgs/sup.png', text: 'Sign out', route: AppRoutes.LOGIN, isSignOut: true),
-            
             const SizedBox(height: 30),
             _buildSupportButton(),
             const SizedBox(height: 20),
@@ -51,24 +45,24 @@ class AppDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerHeader() {
-    return Column(
+    return Obx(() => Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const CircleAvatar(
           radius: 35,
-          backgroundImage: AssetImage('assets/imgs/por.png'), // Add user profile image
+          backgroundImage: AssetImage('assets/imgs/por.png'),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Username',
-          style: TextStyle(
+        Text(
+          homeController.user.value?.username ?? 'Username',
+          style: const TextStyle(
             color: AppColors.primaryRed,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
       ],
-    );
+    ));
   }
 
   Widget _buildDrawerItem({
@@ -83,7 +77,7 @@ class AppDrawer extends StatelessWidget {
       return GestureDetector(
         onTap: () {
           selectedItem.value = text;
-          Get.back(); // Close the drawer
+          Get.back();
           if (route != null) {
             Get.toNamed(route);
           }
@@ -156,7 +150,7 @@ class AppDrawer extends StatelessWidget {
         Get.back();
         if (route != null) {
           if (isSignOut) {
-            Get.offAllNamed(route); // Clear history for sign out
+            Get.offAllNamed(route);
           } else {
             Get.toNamed(route);
           }
@@ -193,7 +187,7 @@ class AppDrawer extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF8A98E5), // Support button color
+        backgroundColor: const Color(0xFF8A98E5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
         elevation: 5,

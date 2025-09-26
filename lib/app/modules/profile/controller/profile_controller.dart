@@ -1,4 +1,5 @@
 
+import 'package:bit_app/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bit_app/services/core_service.dart';
@@ -10,6 +11,7 @@ class ProfileController extends GetxController {
   ProfileController(this._userService);
 
   final _coreService = Get.find<CoreService>();
+  final _authService = Get.find<AuthService>();
 
   // Holds the user's profile data
   final user = Rx<UserModel?>(null);
@@ -63,10 +65,26 @@ class ProfileController extends GetxController {
     locationController = TextEditingController(text: user.value?.location ?? '');
   }
 
+  /// Fetches the latest user profile from the server
+  Future<void> refreshProfile() async {
+    try {
+      final response = await _authService.getMe();
+      if (response.status == 'success' && response.data != null) {
+        _coreService.getStorage.write('user_data', response.data!['data']);
+        user.value = UserModel.fromJson(response.data!['data']);
+        _initializeControllers();
+        Get.snackbar('Success', 'Profile has been updated.', snackPosition: SnackPosition.BOTTOM);
+      } else {
+        Get.snackbar('Error', 'Failed to refresh profile.', snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred.', snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
   /// Toggles between profile view and edit mode
   void toggleEditMode() {
     isEditMode.value = !isEditMode.value;
-    // If we are exiting edit mode without saving, reset controllers
     if (!isEditMode.value) {
       _initializeControllers();
     }
@@ -77,8 +95,9 @@ class ProfileController extends GetxController {
     isLoading.value = true;
     try {
       final response = await _userService.updateProfile({'isAvailable': isAvailable});
-      if (response.status == 'success' && response.data != null) {
-        user.value = UserModel.fromJson(response.data!);
+      // THE FIX: Correctly parse the nested user data from the response
+      if (response.status == 'success' && response.data != null && response.data!['data'] != null) {
+        user.value = UserModel.fromJson(response.data!['data']);
         Get.snackbar('Success', 'Availability updated successfully.', snackPosition: SnackPosition.BOTTOM);
       } else {
         Get.snackbar('Error', response.message, snackPosition: SnackPosition.BOTTOM);
@@ -105,8 +124,9 @@ class ProfileController extends GetxController {
 
       final response = await _userService.updateProfile(updatedData);
 
-      if (response.status == 'success' && response.data != null) {
-        user.value = UserModel.fromJson(response.data!);
+      // THE FIX: Correctly parse the nested user data from the response
+      if (response.status == 'success' && response.data != null && response.data!['data'] != null) {
+        user.value = UserModel.fromJson(response.data!['data']);
         isEditMode.value = false; // Exit edit mode on success
         Get.snackbar('Success', 'Profile updated successfully.', snackPosition: SnackPosition.BOTTOM);
       } else {
@@ -118,12 +138,16 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     }
   }
+  
+  /// Navigates back to the previous screen
+  void goBack() {
+    Get.back();
+  }
 
   /// Signs the user out
   void signOut() {
     _coreService.getStorage.remove('user_data');
-    // Assuming you have a '/login' route defined in your app's routing
-    Get.offAllNamed('/login'); 
+    Get.offAllNamed('/login');
   }
 
   /// Becomes a donor

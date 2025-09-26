@@ -51,7 +51,7 @@ class HomeView extends GetView<HomeController> {
           child: PageView(
             controller: controller.bannerController,
             children: [
-              Obx(() => _bannerItem('assets/imgs/background.png', 'Welcome ${controller.user.value?.username.split(' ').first ?? ''}!',)),
+              Obx(() => _bannerItem('assets/imgs/background.png', 'Welcome ${controller.user.value?.username ?? ''}!',)),
               _bannerItem('assets/imgs/background.png', 'Give Blood, Give Life!'),
             ],
           ),

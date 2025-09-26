@@ -63,7 +63,11 @@ class LoginController extends GetxController {
           _showSnackbar('Login Error', 'Authentication failed: Invalid response from server.', isError: true);
         }
       } else {
-        _showSnackbar('Login Failed', response.message, isError: true);
+        if (response.message == "Bad email or password") {
+          _showSnackbar('Login Failed', 'Incorrect email or password. Please try again.', isError: true);
+        } else {
+          _showSnackbar('Login Failed', response.message, isError: true);
+        }
       }
     } catch (e) {
       print("Login Controller Error: $e");

@@ -6,6 +6,8 @@ import 'package:bit_app/app/modules/donor_profile/binding/donor_profile_binding.
 import 'package:bit_app/app/modules/donor_profile/view/donor_profile_view.dart';
 import 'package:bit_app/app/modules/find_donor/binding/find_donor_binding.dart';
 import 'package:bit_app/app/modules/find_donor/view/find_donor_view.dart';
+import 'package:bit_app/app/modules/forgot_password/binding/forgot_password_binding.dart';
+import 'package:bit_app/app/modules/forgot_password/view/forgot_password_view.dart';
 import 'package:bit_app/app/modules/login/bindings/login_binding.dart';
 import 'package:bit_app/app/modules/login/view/login_view.dart';
 import 'package:bit_app/app/modules/notifications/binding/notifications_binding.dart';
@@ -23,6 +25,7 @@ import 'package:bit_app/app/modules/splash/view/splash_view.dart';
 import 'package:bit_app/app/modules/verification/bindings/verification_binding.dart';
 import 'package:bit_app/app/modules/verification/view/verififcation_view.dart';
 import 'package:bit_app/app/routes/app_routes.dart';
+
 import 'package:get/get.dart';
 
 // ... other imports
@@ -53,6 +56,11 @@ class AppPages {
       name: AppRoutes.VERIFICATION,
       page: () => VerificationView(),
       binding: VerificationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
     ),
   
 

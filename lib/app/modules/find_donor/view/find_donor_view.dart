@@ -87,12 +87,16 @@ class FindDonorView extends GetView<FindDonorController> {
         // --- Search Bar ---
         TextField(
           controller: controller.searchController,
+          onChanged: (value) => controller.filterDonors(),
           decoration: InputDecoration(
             hintText: 'Search by name...',
             prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30.0),
+              borderSide: BorderSide.none,
+            ),
             filled: true,
-            fillColor: Colors.grey[100],
+            fillColor: Colors.white,
           ),
         ),
         const SizedBox(height: 12),

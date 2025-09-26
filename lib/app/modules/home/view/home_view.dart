@@ -110,10 +110,7 @@ class HomeView extends GetView<HomeController> {
           _actionButton(
             imagePath: 'assets/imgs/donate.png',
             label: 'Donate',
-                onTap: () => Get.toNamed(AppRoutes.FIND_DONOR),
-            // onTap: () {
-            //   Get.snackbar('Coming Soon', 'Donate functionality will be added later.');
-            // },
+            onTap: () => controller.becomeDonor(),
           ),
         ],
       ),

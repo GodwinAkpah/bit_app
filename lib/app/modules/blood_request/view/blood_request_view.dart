@@ -80,6 +80,12 @@ class BloodRequestView extends GetView<BloodRequestController> {
                 
                 _buildSectionHeader(icon: Icons.edit_note, title: 'Reason'),
                 _buildTextField(controller.reasonController, hint: 'Optional', maxLines: 3),
+                // _buildTextField(
+                //   controller: controller.reasonController,
+                //   label: 'Reason (Optional)',
+                //   hint: 'e.g., For a scheduled surgery',
+                //   icon: Icons.notes,
+                // ),
                 const SizedBox(height: 30),
                 
                 SizedBox(

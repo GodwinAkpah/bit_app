@@ -27,13 +27,13 @@ class FindDonorController extends GetxController {
     fetchAllDonors();
 
     // Add listeners to automatically trigger the filter when the user types or selects a new group
-    searchController.addListener(_filterDonors);
-    selectedBloodGroup.listen((_) => _filterDonors());
+    searchController.addListener(filterDonors);
+    selectedBloodGroup.listen((_) => filterDonors());
   }
 
   @override
   void onClose() {
-    searchController.removeListener(_filterDonors);
+    searchController.removeListener(filterDonors);
     searchController.dispose();
     super.onClose();
   }
@@ -66,7 +66,7 @@ class FindDonorController extends GetxController {
   }
 
   /// Filters the list of donors based on the search query and selected blood group.
-  void _filterDonors() {
+  void filterDonors() {
     final nameQuery = searchController.text.toLowerCase();
     final bloodGroupQuery = selectedBloodGroup.value;
 

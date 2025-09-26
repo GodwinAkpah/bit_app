@@ -4,6 +4,7 @@ class AppRoutes {
   static const LOGIN = '/login';
   static const SIGN_UP = '/sign-up';
   static const VERIFICATION = '/verification';
+  static const FORGOT_PASSWORD = '/forgot-password';
 
   static const HOME = '/home'; // This will now be part of the dashboard
   static const DASHBOARD = '/dashboard'; 

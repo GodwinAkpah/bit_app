@@ -1,5 +1,6 @@
 import 'package:bit_app/services/auth/auth_service.dart';
 import 'package:bit_app/services/models/user_model.dart';
+import 'package:bit_app/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,6 +9,7 @@ class HomeController extends GetxController {
   final PageController bannerController = PageController();
 
   final AuthService _authService = Get.find<AuthService>();
+  final UserService _userService = Get.find<UserService>();
 
   // Use Rx<UserModel> to make it reactive
   final Rx<UserModel?> user = Rx<UserModel?>(null);
@@ -36,6 +38,19 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       // Handle exception
+      Get.snackbar('Error', 'An error occurred: $e');
+    }
+  }
+
+  Future<void> becomeDonor() async {
+    try {
+      final response = await _userService.becomeDonor();
+      if (response.status == 'success') {
+        Get.snackbar('Success', 'You are now a donor!');
+      } else {
+        Get.snackbar('Error', response.message);
+      }
+    } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
     }
   }

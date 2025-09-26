@@ -9,32 +9,21 @@ import 'package:get_storage/get_storage.dart';
 void main() async {
   // Ensure that Flutter bindings are initialized.
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize storage.
   await GetStorage.init();
-
-  // Set up the service locators.
   await setupServiceLocator();
-
-  // --- ADDED LOGIC FOR PERSISTENT LOGIN ---
-  // Check if the auth token exists.
   final box = GetStorage();
   final token = box.read('auth_token');
-
   // Determine the initial route based on the token.
   final String initialRoute = (token != null && token.isNotEmpty) ? AppRoutes.DASHBOARD : AppRoutes.SPLASH;
   // --- END ADDED LOGIC ---
-
   // Pass the initial route to the app.
   runApp(MyApp(initialRoute: initialRoute));
 }
-
 class MyApp extends StatelessWidget {
   // --- MODIFIED TO ACCEPT INITIAL ROUTE ---
   final String initialRoute;
   const MyApp({super.key, required this.initialRoute});
-  // --- END MODIFICATION ---
-
+  
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(

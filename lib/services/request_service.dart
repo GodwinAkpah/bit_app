@@ -6,7 +6,7 @@ class RequestService {
   RequestService(this._coreService);
 
   /// Sends a new blood request to the server.
-  /// The endpoint is POST /blood-requests/
+  /// The endpoint is POST /blood-requests
   Future<APIResponse> createBloodRequest(Map<String, dynamic> data) async {
     return await _coreService.post(url: "/blood-requests/", payload: data);
   }
@@ -27,6 +27,6 @@ class RequestService {
     required String requestId,
     required Map<String, dynamic> data,
   }) async {
-    return await _coreService.put(url: "/blood-requests/$requestId/", payload: data);
+    return await _coreService.put(url: "/blood-requests/$requestId", payload: data);
   }
 }

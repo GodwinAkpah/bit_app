@@ -78,7 +78,7 @@ class ProfileView extends GetView<ProfileController> {
           const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: _actionButton(text: 'Donate', imagePath: 'assets/imgs/donate.png', color: AppColors.primaryRed, onTap: () {})),
+              Expanded(child: _actionButton(text: 'Donate', imagePath: 'assets/imgs/donate.png', color: AppColors.primaryRed, onTap: controller.becomeDonor)),
               const SizedBox(width: 16),
               Expanded(child: _actionButton(text: 'Request', imagePath: 'assets/imgs/help.png', color: AppColors.primaryRed, onTap: () {})),
             ],

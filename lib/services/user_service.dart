@@ -69,4 +69,18 @@ class UserService {
 
     return response;
   }
+
+  Future<APIResponse> becomeDonor() async {
+    final userData = _coreService.getStorage.read('user_data');
+    if (userData is! Map<String, dynamic> || userData['id'] == null) {
+      return APIResponse(status: 'error', message: 'User not found. Cannot become a donor.');
+    }
+    final userId = userData['id'];
+    final url = '/donors/';
+    final data = {
+      'user_id': userId,
+      'is_available': true,
+    };
+    return await _coreService.post(url: url, payload: data);
+  }
 }

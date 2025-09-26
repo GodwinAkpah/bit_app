@@ -59,11 +59,7 @@ class RequestsListController extends GetxController {
   }
 
   /// Navigates to the detail page and then refreshes the list when the user returns.
-  void viewRequestDetails(BloodRequestModel request) async {
-    // Navigate and wait for the detail page to be closed.
-    await Get.toNamed(AppRoutes.REQUEST_DETAIL, arguments: request);
-    
-    // When the user comes back, refresh the list to see any status changes.
-    fetchRequests();
+  void navigateToDetail(BloodRequestModel request) {
+    Get.toNamed(AppRoutes.REQUEST_DETAIL, arguments: request);
   }
 }

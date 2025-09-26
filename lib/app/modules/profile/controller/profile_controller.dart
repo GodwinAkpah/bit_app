@@ -125,4 +125,21 @@ class ProfileController extends GetxController {
     // Assuming you have a '/login' route defined in your app's routing
     Get.offAllNamed('/login'); 
   }
+
+  /// Becomes a donor
+  void becomeDonor() async {
+    isLoading.value = true;
+    try {
+      final response = await _userService.becomeDonor();
+      if (response.status == 'success') {
+        Get.snackbar('Success', 'You are now a donor!', snackPosition: SnackPosition.BOTTOM);
+      } else {
+        Get.snackbar('Error', response.message, snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred: $e', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

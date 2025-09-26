@@ -64,7 +64,7 @@ class RequestsListView extends GetView<RequestsListController> {
       elevation: 2,
       shadowColor: Colors.grey.withOpacity(0.1),
       child: ListTile(
-        onTap: () => controller.viewRequestDetails(request),
+                onTap: () => controller.navigateToDetail(request),
         contentPadding: const EdgeInsets.all(16),
         leading: Container(
           width: 50,

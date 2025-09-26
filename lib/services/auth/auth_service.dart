@@ -28,6 +28,15 @@ class AuthService {
 
   /// Fetches the current logged-in user's profile data.
   Future<APIResponse> getMe() async {
-    return await _coreService.get(url: "/user/profile");
+    final userData = _coreService.getStorage.read('user_data');
+    if (userData is! Map<String, dynamic> || userData['id'] == null) {
+      return APIResponse(status: 'error', message: 'User not found. Cannot fetch profile.');
+    }
+    final userId = userData['id'];
+    return await _coreService.get(url: "/users/$userId");
+  }
+
+  Future<APIResponse> forgotPassword(String email) async {
+    return await _coreService.post(url: "/auth/forgot-password", payload: {"email": email});
   }
 }

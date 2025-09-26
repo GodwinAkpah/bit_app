@@ -371,7 +371,7 @@ class LoginView extends GetView<LoginController> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () { /* Placeholder for Forgot Password */ },
+                  onPressed: () => Get.toNamed(AppRoutes.FORGOT_PASSWORD),
                   child: const Text('Forgot Password?',
                       style: TextStyle(color: AppColors.primaryRed)),
                 ),
